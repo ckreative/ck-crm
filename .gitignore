@@ -1,0 +1,37 @@
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+Homestead.json
+Homestead.yaml
+Thumbs.db
+
+# Playwright artifacts
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/.playwright/
+/tests/e2e/artifacts/
+*.trace.zip
+*.webm
+
+# Screenshots and HTML outputs in root (from Playwright tests)
+/*.png
+/*-output.html

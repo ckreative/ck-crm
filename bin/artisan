@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+docker exec -u www laravel-app php artisan "$@"
