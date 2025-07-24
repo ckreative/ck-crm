@@ -3,11 +3,15 @@
     "name": "laravel-admin/template",
     "type": "project",
     "description": "A Laravel admin panel starter template with Supabase, Docker, and invitation-only authentication.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
         "blade-ui-kit/blade-heroicons": "^2.6",
+        "ck-crm/leads": "dev-main",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "resend/resend-php": "^0.18.1"
@@ -59,6 +63,12 @@
             "@php artisan test"
         ]
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ckreative/php-admin-packages.git"
+        }
+    ],
     "extra": {
         "laravel": {
             "dont-discover": []
