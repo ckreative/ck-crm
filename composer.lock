@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b83624aadf05d5ba09e98319bad575e",
+    "content-hash": "f0d292fe6cefbc3e23c3e3704b9ea74c",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -284,70 +284,6 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
-        },
-        {
-            "name": "ck-crm/leads",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "/Users/kreation/Development/php-admin-packages/packages/leads",
-                "reference": "a16d651a10b716572c3d2b7cef4a4749caec0f61"
-            },
-            "require": {
-                "illuminate/database": "^10.0|^11.0|^12.0",
-                "illuminate/http": "^10.0|^11.0|^12.0",
-                "illuminate/support": "^10.0|^11.0|^12.0",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^8.0|^9.0",
-                "phpunit/phpunit": "^10.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "CkCrm\\Leads\\LeadsServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "CkCrm\\Leads\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "CkCrm\\Leads\\Tests\\": "tests/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "CK CRM",
-                    "email": "support@ck-crm.com",
-                    "homepage": "https://ck-crm.com"
-                }
-            ],
-            "description": "Lead management package for Laravel with Cal.com integration",
-            "homepage": "https://github.com/ck-crm/leads",
-            "keywords": [
-                "booking-sync",
-                "cal.com",
-                "crm",
-                "laravel",
-                "lead-management",
-                "leads"
-            ],
-            "support": {
-                "issues": "https://github.com/ck-crm/leads/issues",
-                "source": "https://github.com/ck-crm/leads"
-            },
-            "transport-options": {
-                "relative": false
-            }
         },
         {
             "name": "dflydev/dot-access-data",
@@ -8426,9 +8362,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "ck-crm/leads": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
