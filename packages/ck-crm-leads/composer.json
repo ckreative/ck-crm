@@ -1,0 +1,55 @@
+{
+    "name": "ck-crm/leads",
+    "description": "Lead management package for Laravel with Cal.com integration",
+    "keywords": [
+        "laravel",
+        "leads",
+        "crm",
+        "cal.com",
+        "lead-management",
+        "booking-sync"
+    ],
+    "homepage": "https://github.com/ck-crm/leads",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "CK CRM",
+            "email": "support@ck-crm.com",
+            "homepage": "https://ck-crm.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/ck-crm/leads/issues",
+        "source": "https://github.com/ck-crm/leads"
+    },
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0|^12.0",
+        "illuminate/database": "^10.0|^11.0|^12.0",
+        "illuminate/http": "^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CkCrm\\Leads\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CkCrm\\Leads\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CkCrm\\Leads\\LeadsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

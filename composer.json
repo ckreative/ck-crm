@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.2",
         "blade-ui-kit/blade-heroicons": "^2.6",
+        "ck-crm/leads": "@dev",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "resend/resend-php": "^0.18.1"
@@ -64,8 +65,11 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/ckreative/php-admin-packages.git"
+            "type": "path",
+            "url": "./packages/ck-crm-leads",
+            "options": {
+                "symlink": false
+            }
         }
     ],
     "extra": {
