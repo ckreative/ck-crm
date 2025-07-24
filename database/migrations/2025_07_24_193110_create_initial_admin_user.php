@@ -13,8 +13,10 @@ return new class extends Migration
     {
         // Only create admin user if no users exist
         if (DB::table('users')->count() === 0) {
-            DB::table('users')->insert([
-                'id' => Str::uuid()->toString(),
+            // Check if id column is uuid or bigint
+            $idColumnType = DB::connection()->getDoctrineColumn('users', 'id')->getType()->getName();
+            
+            $userData = [
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
                 'password' => bcrypt('password'),
@@ -22,7 +24,14 @@ return new class extends Migration
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ];
+            
+            // Only add UUID if column type is UUID/string
+            if (in_array($idColumnType, ['uuid', 'string', 'guid'])) {
+                $userData['id'] = Str::uuid()->toString();
+            }
+            
+            DB::table('users')->insert($userData);
         }
     }
 
