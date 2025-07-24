@@ -1,0 +1,51 @@
+{
+    "_comment": "This is an example of how to configure composer.json in another project to use this package",
+    "name": "your-company/your-project",
+    "type": "project",
+    "require": {
+        "php": "^8.1",
+        "laravel/framework": "^12.0",
+        "ck-crm/leads": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "ck-crm/leads",
+                "version": "dev-main",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/ckreative/ck-crm.git",
+                    "reference": "main"
+                },
+                "dist": {
+                    "type": "zip",
+                    "url": "https://github.com/ckreative/ck-crm/archive/main.zip"
+                },
+                "require": {
+                    "php": "^8.1",
+                    "illuminate/support": "^10.0|^11.0|^12.0",
+                    "illuminate/database": "^10.0|^11.0|^12.0",
+                    "illuminate/http": "^10.0|^11.0|^12.0"
+                },
+                "autoload": {
+                    "psr-4": {
+                        "CkCrm\\Leads\\": "packages/leads/src/"
+                    }
+                },
+                "extra": {
+                    "laravel": {
+                        "providers": [
+                            "CkCrm\\Leads\\LeadsServiceProvider"
+                        ]
+                    }
+                }
+            }
+        }
+    ],
+    "config": {
+        "github-oauth": {
+            "github.com": "YOUR_GITHUB_TOKEN_HERE"
+        }
+    }
+}
