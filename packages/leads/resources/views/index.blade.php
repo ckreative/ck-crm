@@ -1,9 +1,7 @@
-@php
-    $layout = config('leads.views.layout', 'x-app-layout');
-    $routePrefix = config('leads.routes.as', 'leads.');
-@endphp
-
-<{{ $layout }}>
+<x-app-layout>
+    @php
+        $routePrefix = config('leads.routes.as', 'leads.');
+    @endphp
     <div class="px-4 sm:px-6 lg:px-8">
         <div class="sm:flex sm:items-center sm:justify-between">
             <div class="sm:flex-auto">
@@ -172,4 +170,4 @@
             </div>
         </div>
     @endif
-</{{ $layout }}>
+</x-app-layout>
