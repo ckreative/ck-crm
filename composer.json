@@ -62,6 +62,12 @@
             "@php artisan test"
         ]
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ckreative/php-admin-packages.git"
+        }
+    ],
     "extra": {
         "laravel": {
             "dont-discover": []
