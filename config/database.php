@@ -85,7 +85,13 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
-            'host' => env('PGHOST', '127.0.0.1'),
+            'read' => [
+                'host' => [env('PGHOST', '127.0.0.1')],
+            ],
+            'write' => [
+                'host' => env('PGHOST_DIRECT', env('PGHOST', '127.0.0.1')),
+            ],
+            'sticky' => true,
             'port' => env('PGPORT', '5432'),
             'database' => env('PGDATABASE', 'laravel'),
             'username' => env('PGUSER', 'root'),
@@ -100,23 +106,6 @@ return [
             ],
         ],
 
-        'pgsql_migration' => [
-            'driver' => 'pgsql',
-            'url' => env('DB_URL'),
-            'host' => env('PGHOST_DIRECT', env('PGHOST', '127.0.0.1')),
-            'port' => env('PGPORT', '5432'),
-            'database' => env('PGDATABASE', 'laravel'),
-            'username' => env('PGUSER', 'root'),
-            'password' => env('PGPASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => env('PGSCHEMA', 'laravel'),
-            'sslmode' => env('PGSSLMODE', 'prefer'),
-            'options' => [
-                'channel_binding' => env('PGCHANNELBINDING', 'prefer'),
-            ],
-        ],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
@@ -149,7 +138,6 @@ return [
     'migrations' => [
         'table' => 'migrations',
         'update_date_on_publish' => true,
-        'connection' => env('DB_MIGRATION_CONNECTION', 'pgsql_migration'),
     ],
 
     /*
