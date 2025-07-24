@@ -13,8 +13,9 @@ return new class extends Migration
     {
         // Only create admin user if no users exist
         if (DB::table('users')->count() === 0) {
-            // Check if id column is uuid or bigint
-            $idColumnType = DB::connection()->getDoctrineColumn('users', 'id')->getType()->getName();
+            // Check if the UUID migration has run by looking for uuid column type
+            $columns = DB::select("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'id'");
+            $isUuid = !empty($columns) && in_array($columns[0]->data_type, ['uuid', 'character varying', 'varchar', 'text']);
             
             $userData = [
                 'name' => 'Admin User',
@@ -26,8 +27,8 @@ return new class extends Migration
                 'updated_at' => now(),
             ];
             
-            // Only add UUID if column type is UUID/string
-            if (in_array($idColumnType, ['uuid', 'string', 'guid'])) {
+            // Only add UUID if column is UUID type
+            if ($isUuid) {
                 $userData['id'] = Str::uuid()->toString();
             }
             
