@@ -66,9 +66,9 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./packages/ck-crm-leads",
+            "url": "./packages/*",
             "options": {
-                "symlink": false
+                "symlink": true
             }
         }
     ],

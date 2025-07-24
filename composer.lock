@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bff35452f17564603de3bfddf13d772b",
+    "content-hash": "002247d43e5caaeac5757fbaa9844a5a",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -290,8 +290,8 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./packages/ck-crm-leads",
-                "reference": "b01d6d72f63fd59e75c2192daed30aab4bd3e736"
+                "url": "./packages/leads",
+                "reference": "758104fc072cef5457cbd1bea1c94ca89ac37b73"
             },
             "require": {
                 "illuminate/database": "^10.0|^11.0|^12.0",
@@ -346,7 +346,7 @@
                 "source": "https://github.com/ck-crm/leads"
             },
             "transport-options": {
-                "symlink": false,
+                "symlink": true,
                 "relative": true
             }
         },
