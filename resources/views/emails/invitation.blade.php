@@ -3,7 +3,13 @@
 
 Hi there,
 
+@if($organization && $organizationRole === 'org_owner')
+{{ $invitedBy }} has invited you to join {{ config('app.name') }} as the owner of {{ $organization->name }}.
+@elseif($organization)
+{{ $invitedBy }} has invited you to join {{ $organization->name }} on {{ config('app.name') }}.
+@else
 {{ $invitedBy }} has invited you to join {{ config('app.name') }} as an administrator.
+@endif
 
 To accept this invitation and create your account, please click the button below:
 

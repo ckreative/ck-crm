@@ -8,10 +8,23 @@ class AppSettingsController extends Controller
 {
     /**
      * Display the app settings main page.
-     * Redirects to users page as it's the default.
+     * Shows general settings.
      */
     public function index()
     {
-        return redirect()->route('app-settings.users.index');
+        $user = auth()->user();
+        $organization = $user->currentOrganization;
+        
+        // If no current organization, get the first one
+        if (!$organization) {
+            $organization = $user->organizations()->first();
+        }
+        
+        // If still no organization, redirect to organization selection
+        if (!$organization) {
+            return redirect()->route('organizations.index');
+        }
+        
+        return view('app-settings.general', compact('organization'));
     }
 }

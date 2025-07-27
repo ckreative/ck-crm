@@ -2,6 +2,7 @@
 
 namespace CkCrm\Leads\Models;
 
+use App\Traits\BelongsToOrganization;
 use CkCrm\Leads\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +11,7 @@ use CkCrm\Leads\Database\Factories\LeadFactory;
 
 class Lead extends Model
 {
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuid, BelongsToOrganization;
     
     /**
      * The attributes that are mass assignable.
@@ -24,7 +25,10 @@ class Lead extends Model
         'company',
         'notes',
         'calcom_event_id',
+        'appointment_date',
+        'appointment_status',
         'archived_at',
+        'organization_id',
     ];
 
     /**
@@ -36,6 +40,7 @@ class Lead extends Model
     {
         return [
             'archived_at' => 'datetime',
+            'appointment_date' => 'datetime',
         ];
     }
 
@@ -90,6 +95,26 @@ class Lead extends Model
     {
         return $query->withoutGlobalScope('notArchived')
             ->whereNotNull('archived_at');
+    }
+
+    /**
+     * Scope a query to include leads with upcoming appointments.
+     */
+    public function scopeUpcomingAppointments(Builder $query): Builder
+    {
+        return $query->whereNotNull('appointment_date')
+            ->where('appointment_date', '>', now())
+            ->whereIn('appointment_status', ['scheduled', 'confirmed']);
+    }
+
+    /**
+     * Scope a query to include leads with appointments in a date range.
+     */
+    public function scopeAppointmentsBetween(Builder $query, $startDate, $endDate): Builder
+    {
+        return $query->whereNotNull('appointment_date')
+            ->whereBetween('appointment_date', [$startDate, $endDate])
+            ->whereIn('appointment_status', ['scheduled', 'confirmed']);
     }
 
     /**

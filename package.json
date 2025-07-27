@@ -11,6 +11,7 @@
         "test:e2e:clean": "rm -rf test-results/ playwright-report/ .playwright/ tests/e2e/artifacts/ && find . -maxdepth 1 -name '*.png' -delete && find . -maxdepth 1 -name '*-output.html' -delete && find . -name '*.trace.zip' -delete && find . -name '*.webm' -delete"
     },
     "devDependencies": {
+        "@playwright/test": "^1.54.1",
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/vite": "^4.0.0",
         "alpinejs": "^3.4.2",

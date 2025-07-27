@@ -1,0 +1,178 @@
+# CK-CRM Project Rules for Cursor AI
+
+## Project Stack
+- Laravel PHP
+- Tailwind CSS
+- Supabase
+- Alpine.js (for frontend interactivity)
+
+## CRITICAL: No UI/UX Changes
+**DO NOT change the UI design unless explicitly requested.**
+
+### Allowed:
+- Bug fixes that do not alter visual design
+- Content changes that do not affect layout
+
+### Not Allowed:
+- Modifying layout, styling, colors, typography, or interactions without approval
+- Creating new components or design patterns without design team sign-off
+
+## UX Design Rules
+1. Do not change the UI design unless explicitly requested
+2. Respect established design systems - use pre-approved tokens, components, and patterns
+3. Maintain consistency - keep structure, spacing, and interaction patterns throughout
+4. User flows must be predictable and logical
+5. Prioritize clarity over creativity
+6. Respect accessibility standards
+7. Content hierarchy and information architecture should not be altered
+8. Feedback and error states must remain clear and actionable
+9. Do not remove or hide features without approval
+10. Document rationale for any allowed changes
+
+## UX & UI Laws to Follow
+- Hick's Law: Minimize choices to reduce user decision time
+- Fitts's Law: Design interactive elements large enough and close enough
+- Jakob's Law: Work like other products users already know
+- Law of Proximity: Close elements are perceived as related
+- Law of Similarity: Similar items are part of the same group
+- Miller's Law: Users can hold ~7 items in working memory
+- Occam's Razor: Choose the simplest solution
+- Pareto Principle: Focus on 20% of features that deliver 80% of value
+- Peak-End Rule: Users judge by peak and end experiences
+- Serial Position Effect: First and last items are remembered best
+- Tesler's Law: Move complexity away from the user
+
+## Database (Postgres & Supabase)
+
+### Migrations
+- Use versioned migration files
+- Each migration must be clear and incremental
+- Include down scripts for reversibility
+- Document all schema changes
+
+### Postgres Functions
+- **ALL database queries MUST be implemented as Postgres functions**
+- **NEVER create more than one function for the same task**
+- Write small, single-purpose functions
+- Naming: `{action}_{entity}[_qualifier]` (e.g., `get_user_by_email`, `create_order`)
+- Prefer SQL functions over PL/pgSQL for simple queries
+- Direct SQL queries from application are NOT allowed
+
+### RLS (Row-Level Security)
+- Enable RLS by default on all tables
+- Use `auth.uid()` NOT `current_user`
+- SELECT policies: use USING only
+- INSERT policies: use WITH CHECK only
+- UPDATE policies: use both WITH CHECK and USING
+- DELETE policies: use USING only
+- Don't use FOR ALL - create separate policies
+- Always specify roles: `TO authenticated` or `TO anon`
+- Add indexes on columns used in policies
+- Wrap functions with select: `(select auth.uid())`
+- Minimize joins - use IN operations instead
+
+### SQL Style
+- Always use lowercase for table and column names
+- Use snake_case consistently
+- Indent nested SELECTs clearly
+- Comment complex joins or subqueries
+
+### Primary Keys
+- **ALWAYS use UUIDs for primary keys in new tables**
+- Use `$table->uuid('id')->primary()` in migrations
+- Add `use HasUuid` trait to all models
+- Never use auto-incrementing integers for new tables
+
+## Laravel PHP Guidelines
+
+### Code Style
+- Follow PSR-12 coding standards
+- Use PHP 8+ features appropriately
+- Type declarations and return types for ALL methods
+- Dependency injection over facades where appropriate
+- Keep controllers thin - business logic in services/actions
+- Use Laravel's built-in validation features
+
+### Naming Conventions
+- PascalCase: class names
+- camelCase: method and variable names
+- snake_case: database columns and table names
+- kebab-case: routes and URLs
+- Descriptive names that indicate purpose
+
+### Best Practices
+- Prevent N+1 queries with eager loading
+- Repository pattern for complex data access
+- Use policies and gates for authorization
+- Leverage caching mechanisms appropriately
+- Use queues for time-consuming tasks
+- Proper logging and error handling
+- Database transactions for data integrity
+- RESTful conventions for API routes
+
+### Security
+- Always validate and sanitize user input
+- Use Laravel's CSRF protection
+- Proper authentication and authorization
+- Never expose sensitive information
+- Use environment variables for configuration
+- Keep dependencies updated
+- Prepared statements via Eloquent/Query Builder
+
+### Performance
+- Use eager loading to prevent N+1 queries
+- Implement proper database indexing
+- Strategic caching (Redis/Memcached)
+- Optimize database queries
+- Pagination for large datasets
+- API rate limiting
+
+## Styling Guidelines
+- Use existing Tailwind utility classes only
+- **NEVER use @apply directive in Tailwind**
+- Keep blade templates clean and organized
+- Extract reusable UI into blade components
+- Mobile-first responsive design approach
+
+## Code Comments
+- **DO NOT ADD ANY COMMENTS unless explicitly asked**
+
+## Testing
+
+### Playwright Testing
+- Store E2E tests in `tests/e2e/` by feature
+- Never commit test artifacts
+- Clean up after test runs
+
+### Artifacts to Clean
+- Screenshots: `*.png` files
+- Test results: `/test-results/`
+- Reports: `/playwright-report/`
+- Cache: `/playwright/.cache/`, `/.playwright/`
+- HTML outputs: `*-output.html`
+- Traces: `*.trace.zip`
+- Videos: `*.webm`
+
+### Test Organization
+- Group by feature: `tests/e2e/auth/`, `tests/e2e/dashboard/`
+- Descriptive test names explaining scenario
+- Focus test files on single feature/flow
+
+## General Principles
+- Follow existing patterns - don't introduce new ones
+- Wait for explicit approval for design/UX/architecture changes
+- Focus on stable, predictable, minimal-impact updates
+- Prioritize maintainability, clarity, and security
+- Never assume libraries are available - check first
+- Match existing code style and conventions
+- Security best practices - no exposed secrets/keys
+
+## Requirements & Implementation
+- Start with clear written requirements
+- Engage design/UX team early for ambiguity
+- Document user flows and edge cases
+- Never assume or alter UX - escalate for clarification
+
+## Final Reminders
+**No UI or UX design changes unless explicitly requested.**
+Thank you for keeping this project disciplined and future-proof.

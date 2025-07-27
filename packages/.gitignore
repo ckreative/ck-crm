@@ -1,0 +1,17 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+
+# Testing
+*/vendor/
+*/coverage/
+*/.phpunit.result.cache
+*/phpunit.xml
+
+# Build artifacts
+*/build/
+*/dist/

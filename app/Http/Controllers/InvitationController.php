@@ -61,6 +61,15 @@ class InvitationController extends Controller
             'accepted_at' => now(),
         ]);
 
+        // If invitation has organization context, add user to organization
+        if ($invitation->organization_id) {
+            $organization = $invitation->organization;
+            if ($organization) {
+                $organization->addUser($user, $invitation->organization_role ?: 'org_member');
+                $user->setCurrentOrganization($organization);
+            }
+        }
+
         // Log the user in
         Auth::login($user);
 

@@ -1,23 +1,9 @@
-<x-app-settings-layout>
-    <!-- Page header -->
+<x-app-layout>
+    <x-slot name="navigation">
+        <x-app-settings-navigation />
+    </x-slot>
+    
     <div class="divide-y divide-gray-200" x-data="{ showInviteModal: false }">
-        <div class="pb-6">
-            <div class="sm:flex sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-base font-semibold leading-7 text-gray-900">User Management</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">Manage users and send invitations to new administrators.</p>
-                </div>
-                <div class="mt-4 sm:mt-0">
-                    <button type="button" 
-                            @click="showInviteModal = true"
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-semibold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
-                        <x-heroicon-o-plus class="-ml-1 mr-2 h-5 w-5" />
-                        Invite User
-                    </button>
-                </div>
-            </div>
-        </div>
-
 
     <!-- Tabs -->
     <div class="mt-8" x-data="{ activeTab: '{{ old('active_tab', session('active_tab', 'users')) }}' }">
@@ -248,4 +234,4 @@
             title="Error"
             :message="session('error')" />
     @endif
-</x-app-settings-layout>
+</x-app-layout>

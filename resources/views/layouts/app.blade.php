@@ -13,33 +13,36 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script>
-            // Ensure Alpine is available globally
-            document.addEventListener('alpine:init', () => {
-                console.log('Alpine initialized');
-            });
-        </script>
     </head>
     <body class="h-full">
         <div class="min-h-screen bg-gray-100">
-            <x-sidebar />
+            @if(!isset($hideSidebar) || !$hideSidebar)
+                <x-sidebar />
+            @endif
 
-            <div class="lg:pl-72">
+            <div class="{{ (!isset($hideSidebar) || !$hideSidebar) ? 'lg:pl-72' : '' }}">
                 <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-gray-100 px-4 sm:gap-x-6 sm:px-6 lg:px-8">
-                    <!-- Separator -->
-                    <div aria-hidden="true" class="h-6 w-px bg-gray-200 lg:hidden"></div>
+                    @if(isset($hideSidebar) && $hideSidebar)
+                        <!-- Logo -->
+                        <div class="flex items-center gap-x-2">
+                            <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            <span class="text-xl font-semibold text-gray-900">{{ config('app.name', 'Laravel') }}</span>
+                        </div>
+                    @else
+                        <!-- Separator -->
+                        <div aria-hidden="true" class="h-6 w-px bg-gray-200 lg:hidden"></div>
+                    @endif
 
                     <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-                        <form action="#" method="GET" class="relative flex flex-1">
-                            <label for="search-field" class="sr-only">Search</label>
-                            <x-heroicon-o-magnifying-glass class="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400" />
-                            <input id="search-field" 
-                                   class="block h-full w-full border-0 bg-gray-100 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm" 
-                                   placeholder="Search..." 
-                                   type="search" 
-                                   name="search">
-                        </form>
+                        <div class="flex-1"></div>
                         <div class="flex items-center gap-x-4 lg:gap-x-6">
+                            @if(!isset($hideSidebar) || !$hideSidebar)
+                                <!-- Organization Switcher -->
+                                <x-organization-switcher />
+                            @endif
+
                             <button type="button" class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
                                 <span class="sr-only">View notifications</span>
                                 <x-heroicon-o-bell class="h-6 w-6" />
@@ -85,8 +88,28 @@
                     </div>
                 </div>
 
+                @if(isset($navigation))
+                    {{ $navigation }}
+                @endif
+
                 <main class="py-10">
                     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        @if (session('success'))
+                            <div class="mb-4 rounded-md bg-green-50 p-4">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-green-800">
+                                            {{ session('success') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                         {{ $slot }}
                     </div>
                 </main>

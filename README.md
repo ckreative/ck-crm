@@ -16,6 +16,7 @@ A modern Laravel admin panel starter template with Supabase integration, Docker 
 - 🎨 **Modern UI** - Clean, responsive design with Tailwind CSS and Alpine.js
 - 🔑 **Extended sessions** - 30-day session lifetime for better UX
 - 🛡️ **Security focused** - CSRF protection, secure authentication, prepared statements
+- 🖼️ **Image management** - Logo uploads with automatic transformations and CDN support
 
 ## Quick Start
 
@@ -53,6 +54,50 @@ cd laravel-admin-template
 - [Email Configuration](docs/email-configuration.md) - Setting up Resend or other email providers
 - [User Invitation System](docs/features/user-invitation.md) - How the invitation system works
 - [Customization Guide](docs/customization.md) - Adapting the template for your needs
+
+## Email Configuration (Resend)
+
+The application uses Resend for sending transactional emails (invitations, notifications, etc.). Here's how to set it up:
+
+### Development Setup
+
+For local development, you can use the `log` driver to write emails to your log file instead of sending them:
+
+```bash
+MAIL_MAILER=log
+```
+
+Emails will be written to `storage/logs/laravel.log`.
+
+### Production Setup with Resend
+
+1. **Sign up for Resend**
+   - Go to [https://resend.com](https://resend.com)
+   - Create a free account (3,000 emails/month free tier)
+
+2. **Get your API key**
+   - In the Resend dashboard, go to API Keys
+   - Create a new API key
+   - Copy the key (it starts with `re_`)
+
+3. **Update your `.env` file**
+   ```bash
+   MAIL_MAILER=resend
+   RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxx  # Your actual API key
+   MAIL_FROM_ADDRESS="noreply@yourdomain.com"
+   MAIL_FROM_NAME="${APP_NAME}"
+   ```
+
+4. **Verify your domain (optional but recommended)**
+   - In Resend dashboard, add your domain
+   - Add the DNS records as instructed
+   - This improves email deliverability
+
+### Important Notes
+
+- **Organization Creation**: You cannot create organizations with new user emails unless email is configured (either `log` driver or valid Resend API key)
+- **Existing Users**: You can always add existing users as organization owners without email configuration
+- **Error Handling**: The system will show a clear error if you try to invite users without proper email configuration
 
 ## Default Credentials
 
@@ -138,14 +183,88 @@ php artisan test
 php artisan test --coverage
 ```
 
+## Storage Configuration
+
+The application supports multiple storage backends for file uploads (logos, images, etc.) with automatic image transformations.
+
+### Local Development
+
+By default, files are stored locally with on-the-fly transformations:
+
+```bash
+# Default configuration in .env
+FILESYSTEM_DISK=public
+
+# Files are stored in storage/app/public
+# Access via: http://localhost:8000/storage/logos/filename.jpg
+# Transformations: http://localhost:8000/image-transform/width=200,height=200/logos/filename.jpg
+```
+
+### Production with Cloudflare R2
+
+For production, we recommend using Cloudflare R2 for storage with automatic CDN and image transformations:
+
+1. **Create R2 Bucket**
+   - Sign up for Cloudflare and create an R2 bucket
+   - Enable public access for the bucket
+   - Note your bucket name and account ID
+
+2. **Configure Laravel Cloud / Production Environment**
+   ```bash
+   # Update .env for production
+   FILESYSTEM_DISK=r2
+   
+   # R2 Configuration (Laravel Cloud provides these automatically)
+   AWS_ACCESS_KEY_ID=your_r2_access_key
+   AWS_SECRET_ACCESS_KEY=your_r2_secret_key
+   AWS_DEFAULT_REGION=auto
+   AWS_BUCKET=your_bucket_name
+   AWS_URL=https://pub-xxxxx.r2.dev  # Your R2 public URL
+   AWS_ENDPOINT=https://account_id.r2.cloudflarestorage.com
+   ```
+
+3. **Enable Cloudflare Image Transformations**
+   - In Cloudflare dashboard, go to Images → Transformations
+   - Enable "Transform images on your zone"
+   - The app will automatically generate transformation URLs like:
+     ```
+     https://yourdomain.com/cdn-cgi/image/width=200,height=200,quality=85/logos/filename.jpg
+     ```
+
+### Image Transformation Options
+
+The application supports various transformation options:
+
+- **Dimensions**: `width`, `height`
+- **Quality**: `quality` (1-100)
+- **Format**: `format` (auto, webp, jpg, png)
+- **Fit**: `fit` (cover, contain, fill, inside, outside)
+
+Example URLs:
+```bash
+# Local development
+/image-transform/width=48,height=48/logos/company.png
+
+# Production with R2/Cloudflare
+https://yourdomain.com/cdn-cgi/image/width=48,height=48,format=webp/logos/company.png
+```
+
+### Storage Best Practices
+
+1. **File Size Limits**: Set appropriate upload limits (default: 2MB for logos)
+2. **Allowed Formats**: JPG, PNG, SVG for logos
+3. **Naming Convention**: Files are automatically renamed with timestamps to prevent conflicts
+4. **CDN Caching**: Transformed images are cached at the CDN edge for performance
+
 ## Production Deployment
 
 1. Set `APP_ENV=production` and `APP_DEBUG=false`
 2. Configure a production database (Supabase Cloud recommended)
 3. Set up a real email service (Resend API key)
-4. Use a proper web server (Nginx/Apache)
-5. Enable HTTPS with SSL certificates
-6. Set up monitoring and backups
+4. Configure storage (Cloudflare R2 recommended)
+5. Use a proper web server (Nginx/Apache)
+6. Enable HTTPS with SSL certificates
+7. Set up monitoring and backups
 
 ## Contributing
 

@@ -151,6 +151,13 @@ WITH CHECK ((select auth.uid()) = id);
 - Indent nested SELECTs clearly for readability.
 - Comment complex joins or subqueries to improve clarity.
 
+### Primary Keys
+
+- **ALWAYS use UUIDs for primary keys in all new tables.**
+- Use `$table->uuid('id')->primary()` in migrations.
+- Add `use HasUuid` trait to all Eloquent models.
+- Never use auto-incrementing integers for new tables.
+
 ---
 
 ## API & Edge Functions
@@ -221,6 +228,91 @@ WITH CHECK ((select auth.uid()) = id);
 - Extract reusable UI components into blade components.
 - Maintain mobile-first responsive design approach.
 - Never use the @apply directive in Tailwind.
+
+---
+
+## Page Implementation Guidelines
+
+### When Creating New Pages in Existing Sections
+
+- **ALWAYS examine existing pages in the same section first** as a reference for styling patterns
+- **Copy the structure from a similar existing page** rather than starting from scratch  
+- **Use identical CSS classes and component patterns** to maintain consistency
+- **Never mix different styling approaches** within the same section
+
+### App Settings Section Patterns
+
+When creating pages in the app-settings section, follow these exact patterns from the Users page:
+
+- **Page Header**:
+  - Container: `<div class="divide-y divide-gray-200">`
+  - Wrapper: `<div class="pb-6">`
+  - Title: `<h2 class="text-base font-semibold leading-7 text-gray-900">`
+  - Description: `<p class="mt-1 text-sm leading-6 text-gray-600">`
+  - Action buttons: `inline-flex items-center px-3 py-2 border border-transparent text-sm font-semibold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600`
+
+- **Tables**:
+  - Wrapper: `overflow-hidden bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-lg`
+  - Headers: `text-xs font-medium text-gray-500 uppercase tracking-wider`
+  - Header padding: `px-6 py-3`
+  - Cell padding: `px-6 py-4`
+  - Body rows: `bg-white divide-y divide-gray-200`
+
+- **Notifications**: Always use `<x-notification>` components, never custom HTML
+
+### Before Committing UI Changes
+
+- Compare new pages side-by-side with existing pages in the same section
+- Verify all styling patterns match exactly
+- Check that spacing, colors, and typography are consistent
+- Test responsive behavior matches existing pages
+
+---
+
+## Component Example Implementation
+
+### When Given a Component Example
+
+When the user provides a specific component example (like from Tailwind UI or other design systems), the design and styling decisions have already been made and validated. Your role is to implement it EXACTLY as provided.
+
+### Implementation Rules
+
+1. **Preserve Exact Structure**
+   - Copy the HTML structure verbatim
+   - Maintain all wrapper divs and nesting
+   - Keep the same element hierarchy
+
+2. **Preserve All Styling**
+   - Copy ALL Tailwind classes exactly as shown
+   - Do not add extra classes (like `shadow-sm`, `ring-1`, etc.) that aren't in the example
+   - Do not remove classes you think are "unnecessary"
+   - Maintain exact spacing (`py-16`, `gap-x-8`, etc.) even if it seems large
+
+3. **Minimal Required Changes Only**
+   - Add Blade directives for dynamic content
+   - Add form tokens (@csrf, @method)
+   - Adapt color scheme ONLY if explicitly requested (e.g., dark to light)
+   - Add Laravel route helpers for links and actions
+
+4. **Do NOT**
+   - Try to fit the component into existing wrappers that add their own padding
+   - Mix patterns from other parts of the application
+   - Use existing components (like x-text-input) if they have different styling
+   - Add breadcrumbs, navigation, or other elements not in the example
+   - "Improve" the spacing because you think it's too much/too little
+
+### Example Checklist
+
+Before implementing a provided component example:
+- [ ] Have I copied the exact div structure?
+- [ ] Are all Tailwind classes preserved exactly?
+- [ ] Did I only change what was explicitly requested?
+- [ ] Am I adding any styling not in the original?
+- [ ] Am I trying to "fit" this into an existing pattern?
+
+### Remember
+
+The component example represents a final, approved design. Your job is implementation, not redesign. If the example has `py-16`, use `py-16`. If it has a specific input style, replicate that exact style. The design has been validated—implement it faithfully.
 
 ---
 

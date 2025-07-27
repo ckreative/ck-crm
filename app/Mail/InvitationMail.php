@@ -44,6 +44,8 @@ class InvitationMail extends Mailable
                 'invitedBy' => $this->invitation->invitedBy->name,
                 'acceptUrl' => route('invitations.show', $this->invitation->token),
                 'expiresAt' => $this->invitation->expires_at,
+                'organization' => $this->invitation->organization,
+                'organizationRole' => $this->invitation->organization_role,
             ],
         );
     }

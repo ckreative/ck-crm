@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'calcom' => [
+        'api_key' => env('CALCOM_API_KEY'),
+    ],
+
 ];

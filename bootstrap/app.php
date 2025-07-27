@@ -13,7 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'organization' => \App\Http\Middleware\OrganizationMiddleware::class,
+            'ensure.has.selected.organization' => \App\Http\Middleware\EnsureHasSelectedOrganization::class,
         ]);
+        
+        // Add organization middleware to web group
+        $middleware->appendToGroup('web', \App\Http\Middleware\OrganizationMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
