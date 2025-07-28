@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
 
 class OrganizationManagementController extends Controller
 {
@@ -316,10 +317,19 @@ class OrganizationManagementController extends Controller
                 Storage::delete($organization->logo_path);
             }
             
-            // Store new logo using default disk (public for local, r2 for production)
+            // Process and store new logo
             $file = $request->file('logo');
-            $filename = Str::slug($organization->slug) . '_' . time() . '.' . $file->extension();
-            $path = $file->storeAs('logos', $filename);
+            $filename = Str::slug($organization->slug) . '_' . time() . '.png';
+            
+            // Process image to ensure it fits within size limits while maintaining aspect ratio
+            $image = Image::read($file);
+            
+            // Resize to fit within 1024x1024 while maintaining aspect ratio (for retina displays)
+            $image->scaleDown(width: 1024, height: 1024);
+            
+            // Save the processed image
+            $path = 'logos/' . $filename;
+            Storage::put($path, $image->toPng());
             $organization->logo_path = $path;
         }
 

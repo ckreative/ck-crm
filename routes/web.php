@@ -18,10 +18,6 @@ Route::get('/test-alpine', function () {
     return view('test-alpine');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified', 'ensure.has.selected.organization'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     // Organization selection routes (not protected by EnsureHasSelectedOrganization)
     Route::get('/organizations/select', [App\Http\Controllers\OrganizationSelectionController::class, 'index'])->name('organizations.select');
@@ -33,36 +29,58 @@ Route::middleware('auth')->group(function () {
     // Organizations page for all authenticated users
     Route::get('/organizations', [OrganizationManagementController::class, 'userIndex'])->name('organizations.index');
     Route::get('/organizations/search', [OrganizationManagementController::class, 'search'])->name('organizations.search');
-});
-
-// Routes that require organization selection
-Route::middleware(['auth', 'ensure.has.selected.organization'])->group(function () {
+    
+    // Global profile routes (not organization-scoped)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // Organization Cal.com test endpoint
-    Route::post('/organizations/{organization}/calcom/test', [OrganizationCalcomController::class, 'test'])->name('organizations.calcom.test');
 });
 
-// Admin routes (protected by auth, admin, and organization selection middleware)
-Route::middleware(['auth', 'admin', 'ensure.has.selected.organization'])->group(function () {
-    // App Settings
-    Route::prefix('app-settings')->name('app-settings.')->group(function () {
-        Route::get('/', [App\Http\Controllers\AppSettingsController::class, 'index'])->name('index');
-        
-        // User Management
-        Route::prefix('users')->name('users.')->group(function () {
-            Route::get('/', [App\Http\Controllers\UserManagementController::class, 'index'])->name('index');
-            Route::post('/invite', [App\Http\Controllers\UserManagementController::class, 'invite'])->name('invite');
-            Route::post('/{invitation}/resend', [App\Http\Controllers\UserManagementController::class, 'resend'])->name('resend');
-            Route::delete('/{invitation}', [App\Http\Controllers\UserManagementController::class, 'cancel'])->name('cancel');
+// Organization-scoped routes
+Route::middleware(['auth', 'organization.from.url'])->prefix('{organization}')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+    
+    // Organization Cal.com test endpoint
+    Route::post('/calcom/test', [OrganizationCalcomController::class, 'test'])->name('organizations.calcom.test');
+    
+    // Admin routes for organization context
+    Route::middleware('admin')->group(function () {
+        // Leads routes (from package)
+        Route::prefix('leads')->name('leads.')->group(function () {
+            Route::get('/', [CkCrm\Leads\Http\Controllers\LeadController::class, 'index'])->name('index');
+            Route::get('/create', [CkCrm\Leads\Http\Controllers\LeadController::class, 'create'])->name('create');
+            Route::post('/', [CkCrm\Leads\Http\Controllers\LeadController::class, 'store'])->name('store');
+            Route::get('/{lead}', [CkCrm\Leads\Http\Controllers\LeadController::class, 'show'])->name('show');
+            Route::get('/{lead}/edit', [CkCrm\Leads\Http\Controllers\LeadController::class, 'edit'])->name('edit');
+            Route::put('/{lead}', [CkCrm\Leads\Http\Controllers\LeadController::class, 'update'])->name('update');
+            Route::post('/{lead}/archive', [CkCrm\Leads\Http\Controllers\LeadController::class, 'archive'])->name('archive');
+            Route::post('/bulk-archive', [CkCrm\Leads\Http\Controllers\LeadController::class, 'bulkArchive'])->name('bulk-archive');
         });
         
-        // Integrations
-        Route::get('/integrations', [App\Http\Controllers\IntegrationsController::class, 'index'])->name('integrations.index');
-        
-        // Organization Management
+        // App Settings
+        Route::prefix('app-settings')->name('app-settings.')->group(function () {
+            Route::get('/', [App\Http\Controllers\AppSettingsController::class, 'index'])->name('index');
+            
+            // User Management
+            Route::prefix('users')->name('users.')->group(function () {
+                Route::get('/', [App\Http\Controllers\UserManagementController::class, 'index'])->name('index');
+                Route::post('/invite', [App\Http\Controllers\UserManagementController::class, 'invite'])->name('invite');
+                Route::post('/{invitation}/resend', [App\Http\Controllers\UserManagementController::class, 'resend'])->name('resend');
+                Route::delete('/{invitation}', [App\Http\Controllers\UserManagementController::class, 'cancel'])->name('cancel');
+            });
+            
+            // Integrations
+            Route::get('/integrations', [App\Http\Controllers\IntegrationsController::class, 'index'])->name('integrations.index');
+        });
+    });
+});
+
+// Admin routes (global, not organization-scoped)
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::prefix('app-settings')->name('app-settings.')->group(function () {
+        // Organization Management (global admin routes)
         Route::prefix('organizations')->name('organizations.')->group(function () {
             Route::get('/create', [OrganizationManagementController::class, 'create'])->name('create');
             Route::post('/', [OrganizationManagementController::class, 'store'])->name('store');
@@ -77,7 +95,6 @@ Route::middleware(['auth', 'admin', 'ensure.has.selected.organization'])->group(
             Route::delete('/{organization}/members/{user}', [OrganizationManagementController::class, 'removeMember'])->name('members.remove');
         });
     });
-    
 });
 
 // Public invitation routes

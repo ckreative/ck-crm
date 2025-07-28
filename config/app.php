@@ -86,6 +86,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Reserved Organization Slugs
+    |--------------------------------------------------------------------------
+    |
+    | These slugs cannot be used for organization names as they conflict
+    | with system routes. Add any top-level routes here.
+    |
+    */
+
+    'reserved_slugs' => [
+        // Authentication routes
+        'login', 'register', 'logout', 'password', 'email', 'verify',
+        // System routes
+        'organizations', 'invitations', 'profile', 'dashboard',
+        // Admin routes
+        'admin', 'app-settings', 'api',
+        // Common reserved words
+        'app', 'www', 'mail', 'ftp', 'sftp', 'help', 'support',
+        // Asset directories
+        'assets', 'css', 'js', 'images', 'storage', 'public',
+        // Framework routes
+        'horizon', 'telescope', 'pulse', 'broadcasting',
+        // Image transformation
+        'image-transform',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |

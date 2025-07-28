@@ -33,10 +33,19 @@
                 <!-- Sidebar component -->
                 <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                     <div class="flex h-16 shrink-0 items-center gap-x-2">
-                        <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        <span class="text-lg font-semibold text-gray-900">{{ config('app.name', 'Laravel') }}</span>
+                        @if(current_organization() && current_organization()->logo_path)
+                            <img src="{{ current_organization()->getLogoUrl(36, 36) }}" 
+                                 srcset="{{ current_organization()->getLogoSrcset(36) }}"
+                                 alt="{{ current_organization()->name }} logo" 
+                                 class="h-9 w-9 rounded-lg object-contain bg-gray-50">
+                        @else
+                            <div class="h-9 w-9 rounded-lg bg-gray-50 flex items-center justify-center">
+                                <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </div>
+                        @endif
+                        <span class="text-lg font-semibold text-gray-900">{{ current_organization() ? current_organization()->name : config('app.name', 'Laravel') }}</span>
                     </div>
                     @include('components.sidebar-navigation')
                 </div>
@@ -48,10 +57,19 @@
     <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
             <div class="flex h-16 shrink-0 items-center gap-x-2">
-                <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-                <span class="text-lg font-semibold text-gray-900">{{ config('app.name', 'Laravel') }}</span>
+                @if(current_organization() && current_organization()->logo_path)
+                    <img src="{{ current_organization()->getLogoUrl(36, 36) }}" 
+                         srcset="{{ current_organization()->getLogoSrcset(36) }}"
+                         alt="{{ current_organization()->name }} logo" 
+                         class="h-9 w-9 rounded-lg object-contain bg-gray-50">
+                @else
+                    <div class="h-9 w-9 rounded-lg bg-gray-50 flex items-center justify-center">
+                        <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                @endif
+                <span class="text-lg font-semibold text-gray-900">{{ current_organization() ? current_organization()->name : config('app.name', 'Laravel') }}</span>
             </div>
             @include('components.sidebar-navigation')
         </div>
@@ -63,7 +81,7 @@
             <span class="sr-only">Open sidebar</span>
             <x-heroicon-o-bars-3 class="h-6 w-6" />
         </button>
-        <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">{{ config('app.name', 'Laravel') }}</div>
+        <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">{{ current_organization() ? current_organization()->name : config('app.name', 'Laravel') }}</div>
         <a href="{{ route('profile.edit') }}">
             <span class="sr-only">Your profile</span>
             <x-user-avatar />

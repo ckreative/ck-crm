@@ -53,7 +53,10 @@
                         <div class="mt-2 flex items-center gap-x-3">
                             <div x-show="!imagePreview && !removeExisting">
                                 @if($organization->logo_path)
-                                    <img src="{{ $organization->logo_thumbnail_url }}" alt="{{ $organization->name }} logo" class="h-12 w-12 rounded-full object-cover">
+                                    <img src="{{ $organization->logo_thumbnail_url }}" 
+                                         srcset="{{ $organization->getLogoSrcset(48) }}"
+                                         alt="{{ $organization->name }} logo" 
+                                         class="h-12 w-12 rounded-full object-contain bg-gray-50">
                                 @else
                                     <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
                                         <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

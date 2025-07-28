@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'organization' => \App\Http\Middleware\OrganizationMiddleware::class,
             'ensure.has.selected.organization' => \App\Http\Middleware\EnsureHasSelectedOrganization::class,
+            'organization.from.url' => \App\Http\Middleware\OrganizationFromUrl::class,
         ]);
         
         // Add organization middleware to web group

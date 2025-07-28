@@ -9,7 +9,7 @@
                 <p class="mt-2 text-sm text-gray-700">A list of all the leads in your account including their name, email, phone and company information.</p>
             </div>
             <div class="mt-4 sm:mt-0 sm:flex-none">
-                <a href="{{ route($routePrefix . 'create') }}"
+                <a href="{{ route($routePrefix . 'create', ['organization' => current_organization()->slug]) }}"
                    class="block rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add lead</a>
             </div>
         </div>
@@ -19,7 +19,7 @@
             <div class="flex gap-x-6 text-sm font-medium leading-5">
                 @php
                     $currentPeriod = request('period', 'all');
-                    $baseParams = request()->except(['period', 'page']);
+                    $baseParams = array_merge(['organization' => current_organization()->slug], request()->except(['period', 'page', 'organization']));
                 @endphp
                 <a href="{{ route($routePrefix . 'index', array_merge($baseParams, ['period' => '7days'])) }}" 
                    class="{{ $currentPeriod === '7days' ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-700' }}">Last 7 days</a>
@@ -38,7 +38,7 @@
 
         <!-- Search Form -->
         <div class="mt-4">
-            <form method="GET" action="{{ route($routePrefix . 'index') }}" class="flex items-center">
+            <form method="GET" action="{{ route($routePrefix . 'index', ['organization' => current_organization()->slug]) }}" class="flex items-center">
                 <div class="relative flex-1 max-w-md">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -56,7 +56,7 @@
                     Search
                 </button>
                 @if(request('search'))
-                    <a href="{{ route($routePrefix . 'index', request()->except('search')) }}"
+                    <a href="{{ route($routePrefix . 'index', array_merge($baseParams, request()->except(['search', 'organization']))) }}"
                        class="ml-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -75,8 +75,8 @@
                 <li class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 {{ $lead->isArchived() ? 'bg-gray-50/50' : '' }}">
                     <div class="flex min-w-0 gap-x-4">
                         <div class="min-w-0 flex-auto">
-                            <p class="text-sm/6 font-semibold text-gray-900">
-                                <a href="{{ route($routePrefix . 'show', $lead) }}">
+                            <p class="text-sm font-semibold text-gray-900">
+                                <a href="{{ route($routePrefix . 'show', ['organization' => current_organization()->slug, 'lead' => $lead]) }}">
                                     <span class="absolute inset-x-0 -top-px bottom-0"></span>
                                     {{ $lead->name }}
                                     @if($lead->isArchived())
@@ -87,24 +87,24 @@
                                 </a>
                             </p>
                             @if($lead->company)
-                                <p class="mt-1 text-xs/5 text-gray-500">{{ $lead->company }}</p>
+                                <p class="mt-1 text-xs text-gray-500">{{ $lead->company }}</p>
                             @endif
-                            <p class="mt-1 flex text-xs/5 text-gray-500">
+                            <p class="mt-1 flex text-xs text-gray-500">
                                 <a href="mailto:{{ $lead->email }}" class="relative truncate hover:underline">{{ $lead->email }}</a>
                             </p>
                             @if($lead->phone)
-                                <p class="mt-1 text-xs/5 text-gray-500">{{ $lead->phone }}</p>
+                                <p class="mt-1 text-xs text-gray-500">{{ $lead->phone }}</p>
                             @endif
                         </div>
                     </div>
                     <div class="flex shrink-0 items-center gap-x-4">
                         <div class="hidden sm:flex sm:flex-col sm:items-end">
-                            <p class="mt-1 text-xs/5 text-gray-500">
+                            <p class="mt-1 text-xs text-gray-500">
                                 Created <time datetime="{{ $lead->created_at->toISOString() }}">{{ $lead->created_at->diffForHumans() }}</time>
                             </p>
                         </div>
-                        <a href="{{ route($routePrefix . 'show', $lead) }}" class="relative z-10">
-                            <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5 flex-none text-gray-400 hover:text-gray-600">
+                        <a href="{{ route($routePrefix . 'show', ['organization' => current_organization()->slug, 'lead' => $lead]) }}" class="relative z-10">
+                            <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="h-5 w-5 flex-none text-gray-400 hover:text-gray-600">
                                 <path d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
                             </svg>
                         </a>
@@ -122,7 +122,7 @@
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No leads found</h3>
                     <p class="mt-1 text-sm text-gray-500">Get started by creating a new lead.</p>
                     <div class="mt-6">
-                        <a href="{{ route($routePrefix . 'create') }}" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                        <a href="{{ route($routePrefix . 'create', ['organization' => current_organization()->slug]) }}" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                             </svg>
@@ -136,7 +136,7 @@
         <!-- Pagination -->
         @if($leads->hasPages())
             <div class="mt-6">
-                {{ $leads->links() }}
+                {{ $leads->appends(request()->except('page'))->links() }}
             </div>
         @endif
     </div>

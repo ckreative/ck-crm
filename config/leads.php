@@ -11,6 +11,7 @@ return [
     */
 
     'routes' => [
+        'enabled' => false, // Disabled to use organization-scoped routes
         'prefix' => 'leads',
         'middleware' => ['web', 'auth', 'admin'],
         'as' => 'leads.',

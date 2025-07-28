@@ -28,7 +28,11 @@ class LeadsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'leads');
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        
+        // Only load routes if enabled
+        if (config('leads.routes.enabled', true)) {
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        }
 
         // Register commands
         if ($this->app->runningInConsole()) {
@@ -65,7 +69,14 @@ class LeadsServiceProvider extends ServiceProvider
         // Share navigation data with views
         $this->app['view']->composer('*', function ($view) {
             $view->with('leadsNavigationEnabled', config('leads.navigation.enabled', true));
-            $view->with('leadsNavigationRoute', route(config('leads.routes.prefix', 'leads') . '.index'));
+            
+            // Generate route with organization parameter if available
+            $currentOrg = app()->has('current_organization') ? app('current_organization') : null;
+            if ($currentOrg) {
+                $view->with('leadsNavigationRoute', route('leads.index', ['organization' => $currentOrg->slug]));
+            } else {
+                $view->with('leadsNavigationRoute', '#');
+            }
         });
     }
 }

@@ -17,8 +17,30 @@ class UserManagementController extends Controller
      */
     public function index()
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $organization = current_organization();
+        
+        // Get users belonging to current organization
+        $users = $organization->users()
+            ->withPivot('role', 'joined_at')
+            ->orderBy('organization_user.joined_at', 'desc')
+            ->get()
+            ->map(function ($user) {
+                // Ensure pivot data is accessible in JSON
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'created_at' => $user->created_at,
+                    'pivot' => [
+                        'role' => $user->pivot->role,
+                        'joined_at' => $user->pivot->joined_at,
+                    ]
+                ];
+            });
+            
+        // Get invitations for current organization
         $invitations = UserInvitation::with('invitedBy')
+            ->where('organization_id', $organization->id)
             ->whereNull('accepted_at')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -31,13 +53,16 @@ class UserManagementController extends Controller
      */
     public function invite(Request $request)
     {
+        $organization = current_organization();
+        
         $validated = $request->validate([
             'email' => [
                 'required',
                 'email',
                 Rule::unique('users', 'email'),
-                Rule::unique('user_invitations', 'email')->where(function ($query) {
-                    $query->whereNull('accepted_at');
+                Rule::unique('user_invitations', 'email')->where(function ($query) use ($organization) {
+                    $query->where('organization_id', $organization->id)
+                          ->whereNull('accepted_at');
                 }),
             ],
         ]);
@@ -46,6 +71,7 @@ class UserManagementController extends Controller
             'email' => $validated['email'],
             'token' => Str::random(64),
             'invited_by' => auth()->id(),
+            'organization_id' => $organization->id,
             'expires_at' => now()->addDays(7),
         ]);
 

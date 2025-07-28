@@ -23,7 +23,27 @@ class OrganizationSwitchController extends Controller
         // Update session
         session(['current_organization_id' => $organization->id]);
 
-        // Redirect back to previous page or dashboard
-        return redirect()->intended(route('dashboard'));
+        // Get the current route name without organization parameter
+        $currentRoute = $request->route()->getName();
+        $intendedUrl = session('url.intended');
+        
+        // If we have an intended URL, check if it needs organization slug
+        if ($intendedUrl) {
+            // Parse the URL and inject the organization slug if needed
+            $path = parse_url($intendedUrl, PHP_URL_PATH);
+            
+            // Check if path doesn't already have an organization slug
+            if ($path && !preg_match('/^\/[^\/]+\/(dashboard|app-settings)/', $path)) {
+                // For organization-scoped routes, prepend the slug
+                if (preg_match('/^\/(dashboard|app-settings)/', $path)) {
+                    $intendedUrl = url('/' . $organization->slug . $path);
+                }
+            }
+            
+            return redirect($intendedUrl);
+        }
+        
+        // Default to organization dashboard
+        return redirect()->route('dashboard', ['organization' => $organization->slug]);
     }
 }

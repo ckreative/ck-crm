@@ -46,14 +46,20 @@ class Organization extends Model
 
         static::creating(function ($organization) {
             if (empty($organization->slug)) {
-                $organization->slug = Str::slug($organization->name);
-                
-                // Ensure unique slug
-                $originalSlug = $organization->slug;
-                $count = 1;
-                
-                while (static::where('slug', $organization->slug)->exists()) {
-                    $organization->slug = $originalSlug . '-' . $count++;
+                $organization->slug = static::generateUniqueSlug($organization->name);
+            } else {
+                // Validate slug is not reserved
+                if (static::isReservedSlug($organization->slug)) {
+                    throw new \InvalidArgumentException("The slug '{$organization->slug}' is reserved and cannot be used.");
+                }
+            }
+        });
+        
+        static::updating(function ($organization) {
+            if ($organization->isDirty('slug')) {
+                // Validate slug is not reserved
+                if (static::isReservedSlug($organization->slug)) {
+                    throw new \InvalidArgumentException("The slug '{$organization->slug}' is reserved and cannot be used.");
                 }
             }
         });
@@ -273,6 +279,25 @@ class Organization extends Model
     }
 
     /**
+     * Get srcset attribute for responsive images (supports retina displays).
+     */
+    public function getLogoSrcset($width, $height = null)
+    {
+        if (!$this->logo_path) {
+            return null;
+        }
+        
+        // If height not specified, make it square
+        $height = $height ?? $width;
+        
+        // Generate URLs for 1x and 2x
+        $url1x = $this->getLogoUrl($width, $height);
+        $url2x = $this->getLogoUrl($width * 2, $height * 2);
+        
+        return "{$url1x} 1x, {$url2x} 2x";
+    }
+
+    /**
      * Get default logo URL (200x200).
      */
     public function getLogoUrlAttribute()
@@ -294,5 +319,38 @@ class Organization extends Model
     public function getLogoLargeUrlAttribute()
     {
         return $this->getLogoUrl(400, 400);
+    }
+
+    /**
+     * Generate a unique slug for the organization.
+     */
+    public static function generateUniqueSlug(string $name): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
+        
+        // Check against reserved slugs
+        while (static::isReservedSlug($slug) || static::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+        
+        return $slug;
+    }
+
+    /**
+     * Check if a slug is reserved.
+     */
+    public static function isReservedSlug(string $slug): bool
+    {
+        return in_array(strtolower($slug), array_map('strtolower', config('app.reserved_slugs', [])));
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }

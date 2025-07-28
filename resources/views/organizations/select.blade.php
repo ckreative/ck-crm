@@ -37,11 +37,18 @@
                         @csrf
                         <button type="submit" class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-xs focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400 w-full text-left">
                             <div class="shrink-0">
-                                <div class="size-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                    <svg class="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                    </svg>
-                                </div>
+                                @if($organization->logo_path)
+                                    <img src="{{ $organization->getLogoUrl(40, 40) }}" 
+                                         srcset="{{ $organization->getLogoSrcset(40) }}"
+                                         alt="{{ $organization->name }} logo" 
+                                         class="size-10 rounded-full object-contain bg-gray-50">
+                                @else
+                                    <div class="size-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                    </div>
+                                @endif
                             </div>
                             <div class="min-w-0 flex-1">
                                 <span aria-hidden="true" class="absolute inset-0"></span>

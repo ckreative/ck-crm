@@ -14,7 +14,8 @@ class LeadController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Lead::query();
+        $organization = app('current_organization');
+        $query = Lead::where('organization_id', $organization->id);
 
         // Filter by archived status
         if ($request->has('archived') && config('leads.features.archive', true)) {
@@ -47,8 +48,11 @@ class LeadController extends Controller
         }
 
         $leads = $query->orderBy('created_at', 'desc')->paginate(20);
+        
+        // Pass additional data that might be needed
+        $sort = $request->get('sort', 'created_at');
 
-        return view('leads::index', compact('leads'));
+        return view('leads::index', compact('leads', 'sort'));
     }
 
     /**
@@ -80,9 +84,12 @@ class LeadController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        $organization = app('current_organization');
+        $validated['organization_id'] = $organization->id;
+
         Lead::create($validated);
 
-        return redirect()->route(config('leads.routes.as', 'leads.') . 'index')
+        return redirect()->route(config('leads.routes.as', 'leads.') . 'index', ['organization' => $organization->slug])
             ->with('success', 'Lead created successfully.');
     }
 
