@@ -211,6 +211,12 @@ class Organization extends Model
     public function updateCalcomSettings(array $calcomSettings): void
     {
         $settings = $this->settings ?? [];
+        $oldCalcomSettings = $this->getCalcomSettings();
+        
+        // Check if Cal.com is being enabled for the first time
+        $wasDisabled = !($oldCalcomSettings['enabled'] ?? false);
+        $isBeingEnabled = ($calcomSettings['enabled'] ?? false) === true;
+        $hasApiKey = !empty($calcomSettings['api_key']) || !empty($oldCalcomSettings['api_key']);
         
         // Encrypt API key if provided
         if (isset($calcomSettings['api_key'])) {
@@ -220,12 +226,38 @@ class Organization extends Model
         }
 
         $settings['calcom'] = array_merge(
-            $this->getCalcomSettings(),
+            $oldCalcomSettings,
             $calcomSettings
         );
 
         $this->settings = $settings;
         $this->save();
+        
+        // Dispatch sync job if Cal.com is being enabled for the first time
+        if ($wasDisabled && $isBeingEnabled && $hasApiKey) {
+            $this->triggerInitialCalcomSync();
+        }
+    }
+    
+    /**
+     * Trigger initial Cal.com sync when enabled for the first time.
+     */
+    protected function triggerInitialCalcomSync(): void
+    {
+        try {
+            \App\Jobs\SyncCalcomForOrganization::dispatch($this);
+            
+            \Log::info('Initial Cal.com sync triggered for organization', [
+                'organization_id' => $this->id,
+                'organization_name' => $this->name,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to trigger initial Cal.com sync', [
+                'organization_id' => $this->id,
+                'organization_name' => $this->name,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

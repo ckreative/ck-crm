@@ -61,9 +61,8 @@ class LeadsServiceProvider extends ServiceProvider
 
         // Register scheduler
         $this->callAfterResolving('Illuminate\Console\Scheduling\Schedule', function ($schedule) {
-            if (config('leads.calcom.sync_enabled', false)) {
-                $schedule->command('leads:sync-calcom')->everyFifteenMinutes();
-            }
+            // Run sync for all organizations with Cal.com enabled
+            $schedule->command('leads:sync-calcom --all')->everyFifteenMinutes();
         });
 
         // Share navigation data with views
