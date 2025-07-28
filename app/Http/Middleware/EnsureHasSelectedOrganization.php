@@ -34,7 +34,7 @@ class EnsureHasSelectedOrganization
             session(['url.intended' => $request->fullUrl()]);
             
             // Check if user has any organizations
-            $hasOrganizations = $user->isAdmin() 
+            $hasOrganizations = $user->isSuperAdmin() 
                 ? \App\Models\Organization::exists()
                 : $user->organizations()->exists();
                 
@@ -48,7 +48,7 @@ class EnsureHasSelectedOrganization
         }
 
         // Verify the user still has access to the selected organization
-        $hasAccess = $user->isAdmin() 
+        $hasAccess = $user->isSuperAdmin() 
             ? \App\Models\Organization::where('id', $currentOrgId)->exists()
             : $user->organizations()->where('id', $currentOrgId)->exists();
 

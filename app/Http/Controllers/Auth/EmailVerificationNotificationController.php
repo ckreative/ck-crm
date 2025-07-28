@@ -13,11 +13,24 @@ class EmailVerificationNotificationController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+        
+        if ($user->hasVerifiedEmail()) {
+            // Super admins always go to organizations page
+            if ($user->isSuperAdmin()) {
+                return redirect()->route('organizations.index');
+            }
+            
+            // Regular users: check if they have a current organization
+            if ($user->current_organization_id && $user->currentOrganization) {
+                return redirect()->intended(route('dashboard', ['organization' => $user->currentOrganization->slug], absolute: false));
+            }
+            
+            // Otherwise, redirect to organization selection
+            return redirect()->route('organizations.select');
         }
 
-        $request->user()->sendEmailVerificationNotification();
+        $user->sendEmailVerificationNotification();
 
         return back()->with('status', 'verification-link-sent');
     }

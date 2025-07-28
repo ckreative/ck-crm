@@ -12,16 +12,23 @@ class OrganizationSwitchController extends Controller
      */
     public function switch(Request $request, Organization $organization)
     {
+        $user = auth()->user();
+        
         // Check if user has access to this organization
-        if (!auth()->user()->canAccessOrganization($organization)) {
+        if (!$user->canAccessOrganization($organization)) {
             abort(403, 'You do not have access to this organization.');
         }
 
-        // Update user's current organization
-        auth()->user()->setCurrentOrganization($organization);
-
-        // Update session
-        session(['current_organization_id' => $organization->id]);
+        // Super admins work in session context only
+        if ($user->isSuperAdmin()) {
+            // Just set the session, don't update the user record
+            session(['current_organization_id' => $organization->id]);
+        } else {
+            // Regular users: update their current organization
+            $user->setCurrentOrganization($organization);
+            // Update session
+            session(['current_organization_id' => $organization->id]);
+        }
 
         // Get the current route name without organization parameter
         $currentRoute = $request->route()->getName();
@@ -33,9 +40,9 @@ class OrganizationSwitchController extends Controller
             $path = parse_url($intendedUrl, PHP_URL_PATH);
             
             // Check if path doesn't already have an organization slug
-            if ($path && !preg_match('/^\/[^\/]+\/(dashboard|app-settings)/', $path)) {
+            if ($path && !preg_match('/^\/[^\/]+\/(dashboard|app-settings|leads)/', $path)) {
                 // For organization-scoped routes, prepend the slug
-                if (preg_match('/^\/(dashboard|app-settings)/', $path)) {
+                if (preg_match('/^\/(dashboard|app-settings|leads)/', $path)) {
                     $intendedUrl = url('/' . $organization->slug . $path);
                 }
             }

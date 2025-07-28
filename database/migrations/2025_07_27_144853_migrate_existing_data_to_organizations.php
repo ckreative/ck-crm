@@ -33,15 +33,12 @@ return new class extends Migration
                 ->where('role', 'admin')
                 ->update(['role' => 'super_admin']);
             
-            // Get all users
-            $users = DB::table('users')->get();
+            // Get all non-super-admin users
+            $users = DB::table('users')->where('role', '!=', 'super_admin')->get();
             
             foreach ($users as $user) {
-                // Add all users to the default organization
-                $role = match($user->role) {
-                    'super_admin' => 'org_admin', // Super admins get org_admin in the default org
-                    default => 'org_member'
-                };
+                // Add non-super-admin users to the default organization
+                $role = 'org_member';
                 
                 DB::table('organization_user')->insert([
                     'organization_id' => $orgId,
@@ -50,11 +47,16 @@ return new class extends Migration
                     'joined_at' => $user->created_at ?? $now,
                 ]);
                 
-                // Set current organization for all users
+                // Set current organization for non-super-admin users
                 DB::table('users')
                     ->where('id', $user->id)
                     ->update(['current_organization_id' => $orgId]);
             }
+            
+            // Super admins should never have a current organization
+            DB::table('users')
+                ->where('role', 'super_admin')
+                ->update(['current_organization_id' => null]);
             
             // Update all existing leads to belong to the default organization
             DB::table('leads')->update(['organization_id' => $orgId]);

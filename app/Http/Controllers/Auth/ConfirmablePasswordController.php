@@ -35,6 +35,19 @@ class ConfirmablePasswordController extends Controller
 
         $request->session()->put('auth.password_confirmed_at', time());
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        
+        // Super admins always go to organizations page
+        if ($user->isSuperAdmin()) {
+            return redirect()->route('organizations.index');
+        }
+        
+        // Regular users: check if they have a current organization
+        if ($user->current_organization_id && $user->currentOrganization) {
+            return redirect()->intended(route('dashboard', ['organization' => $user->currentOrganization->slug], absolute: false));
+        }
+        
+        // Otherwise, redirect to organization selection
+        return redirect()->route('organizations.select');
     }
 }

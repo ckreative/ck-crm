@@ -36,8 +36,8 @@ class OrganizationFromUrl
             // Update session with current organization
             session(['current_organization_id' => $organization->id]);
             
-            // Update user's current organization if different
-            if (auth()->user()->current_organization_id !== $organization->id) {
+            // Only update user's current organization if they're not a super admin
+            if (!auth()->user()->isSuperAdmin() && auth()->user()->current_organization_id !== $organization->id) {
                 auth()->user()->setCurrentOrganization($organization);
             }
         }

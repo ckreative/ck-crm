@@ -17,7 +17,23 @@ class OrganizationMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if ($user = auth()->user()) {
-            // Set current organization from session or user default
+            // Super admins use session-based organization context
+            if ($user->isSuperAdmin()) {
+                // Get organization from session if available
+                $currentOrgId = session('current_organization_id');
+                
+                if ($currentOrgId && ($org = Organization::find($currentOrgId))) {
+                    // Set the organization in app container for this request
+                    app()->instance('current_organization', $org);
+                } else {
+                    // No organization context
+                    app()->instance('current_organization', null);
+                }
+                
+                return $next($request);
+            }
+            
+            // Regular users: Set current organization from session or user default
             $currentOrgId = session('current_organization_id', $user->current_organization_id);
             
             if ($currentOrgId) {

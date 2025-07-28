@@ -21,7 +21,7 @@ return new class extends Migration
                 'name' => 'Admin User',
                 'email' => 'admin@example.com',
                 'password' => bcrypt('password'),
-                'role' => 'admin',
+                'role' => 'super_admin',
                 'email_verified_at' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
