@@ -36,6 +36,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Favicon routes (no auth required for favicons)
+Route::prefix('{organization}')->group(function () {
+    Route::get('/favicon.ico', [App\Http\Controllers\FaviconController::class, 'favicon'])->name('organization.favicon');
+    Route::get('/favicon-{size}.png', [App\Http\Controllers\FaviconController::class, 'favicon'])->name('organization.favicon.sized');
+});
+
 // Organization-scoped routes
 Route::middleware(['auth', 'organization.from.url'])->prefix('{organization}')->group(function () {
     Route::get('/dashboard', function () {

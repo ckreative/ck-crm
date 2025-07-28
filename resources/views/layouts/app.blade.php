@@ -7,6 +7,28 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- Favicons -->
+        @php
+            $currentOrg = current_organization();
+        @endphp
+        @if($currentOrg && $currentOrg->logo_path)
+            <!-- Organization-specific favicons -->
+            <link rel="shortcut icon" href="{{ route('organization.favicon', $currentOrg->slug) }}">
+            <link rel="icon" type="image/png" sizes="16x16" href="{{ route('organization.favicon.sized', [$currentOrg->slug, 'size' => 16]) }}">
+            <link rel="icon" type="image/png" sizes="32x32" href="{{ route('organization.favicon.sized', [$currentOrg->slug, 'size' => 32]) }}">
+            <link rel="icon" type="image/png" sizes="48x48" href="{{ route('organization.favicon.sized', [$currentOrg->slug, 'size' => 48]) }}">
+            
+            <!-- Apple Touch Icons -->
+            <link rel="apple-touch-icon" sizes="180x180" href="{{ route('organization.favicon.sized', [$currentOrg->slug, 'size' => 180]) }}">
+            
+            <!-- Android/Chrome -->
+            <link rel="icon" type="image/png" sizes="192x192" href="{{ route('organization.favicon.sized', [$currentOrg->slug, 'size' => 192]) }}">
+            <link rel="icon" type="image/png" sizes="512x512" href="{{ route('organization.favicon.sized', [$currentOrg->slug, 'size' => 512]) }}">
+        @else
+            <!-- Default favicon -->
+            <link rel="icon" type="image/x-icon" href="/favicon.ico">
+        @endif
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

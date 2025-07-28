@@ -352,6 +352,26 @@ class Organization extends Model
     {
         return $this->getLogoUrl(400, 400);
     }
+    
+    /**
+     * Get favicon URL for a specific size.
+     */
+    public function getFaviconUrl(int $size = 32): ?string
+    {
+        if (!$this->logo_path) {
+            return null;
+        }
+        
+        return route('organization.favicon.sized', [$this->slug, 'size' => $size]);
+    }
+    
+    /**
+     * Check if organization has a custom favicon (logo).
+     */
+    public function hasFavicon(): bool
+    {
+        return !empty($this->logo_path);
+    }
 
     /**
      * Generate a unique slug for the organization.
