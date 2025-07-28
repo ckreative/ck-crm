@@ -11,7 +11,7 @@
                             <h3 class="text-base font-semibold leading-6 text-gray-900">Lead Information</h3>
                             <p class="mt-1 max-w-2xl text-sm text-gray-500">Personal details and notes.</p>
                         </div>
-                        <a href="{{ route($routePrefix . 'edit', $lead) }}" 
+                        <a href="{{ route($routePrefix . 'edit', ['organization' => current_organization()->slug, 'lead' => $lead]) }}" 
                            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                             Edit
                         </a>
@@ -72,12 +72,12 @@
             </div>
 
             <div class="mt-6 flex gap-x-3">
-                <a href="{{ route($routePrefix . 'index') }}"
+                <a href="{{ route($routePrefix . 'index', ['organization' => current_organization()->slug]) }}"
                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Back to Leads
                 </a>
                 @if(config('leads.features.archive', true) && !$lead->isArchived())
-                    <form action="{{ route($routePrefix . 'archive', $lead) }}" method="POST" class="inline">
+                    <form action="{{ route($routePrefix . 'archive', ['organization' => current_organization()->slug, 'lead' => $lead]) }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" 
                                 class="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"

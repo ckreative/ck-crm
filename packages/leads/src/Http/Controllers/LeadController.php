@@ -24,17 +24,7 @@ class LeadController extends Controller
             }
         }
 
-        // Filter by time period
-        $period = $request->get('period', 'all');
-        switch ($period) {
-            case '7days':
-                $query->where('created_at', '>=', now()->subDays(7));
-                break;
-            case '30days':
-                $query->where('created_at', '>=', now()->subDays(30));
-                break;
-            // 'all' shows everything, no additional filter needed
-        }
+        // Remove time period filtering - no longer needed with tabs
 
         // Search functionality
         if ($request->filled('search')) {
@@ -47,12 +37,10 @@ class LeadController extends Controller
             });
         }
 
-        $leads = $query->orderBy('created_at', 'desc')->paginate(20);
-        
-        // Pass additional data that might be needed
-        $sort = $request->get('sort', 'created_at');
+        // Get all leads for JavaScript filtering (no pagination needed for client-side filtering)
+        $leads = $query->orderBy('created_at', 'desc')->get();
 
-        return view('leads::index', compact('leads', 'sort'));
+        return view('leads::index', compact('leads'));
     }
 
     /**
@@ -96,7 +84,7 @@ class LeadController extends Controller
     /**
      * Display the specified lead.
      */
-    public function show(Lead $lead)
+    public function show($organization, Lead $lead)
     {
         return view('leads::show', compact('lead'));
     }
@@ -104,7 +92,7 @@ class LeadController extends Controller
     /**
      * Show the form for editing the specified lead.
      */
-    public function edit(Lead $lead)
+    public function edit($organization, Lead $lead)
     {
         if (config('leads.authorization.enabled', true)) {
             Gate::authorize('update', $lead);
@@ -116,7 +104,7 @@ class LeadController extends Controller
     /**
      * Update the specified lead in storage.
      */
-    public function update(Request $request, Lead $lead)
+    public function update(Request $request, $organization, Lead $lead)
     {
         if (config('leads.authorization.enabled', true)) {
             Gate::authorize('update', $lead);
@@ -132,14 +120,15 @@ class LeadController extends Controller
 
         $lead->update($validated);
 
-        return redirect()->route(config('leads.routes.as', 'leads.') . 'index')
+        $org = app('current_organization');
+        return redirect()->route(config('leads.routes.as', 'leads.') . 'index', ['organization' => $org->slug])
             ->with('success', 'Lead updated successfully.');
     }
 
     /**
      * Archive the specified lead.
      */
-    public function archive(Lead $lead)
+    public function archive($organization, Lead $lead)
     {
         if (!config('leads.features.archive', true)) {
             abort(404);
